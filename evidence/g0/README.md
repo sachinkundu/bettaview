@@ -7,10 +7,27 @@ of repository content.
 ## Fixture pull request
 
 - Repository: `sachinkundu/bettaview`
-- Pull request: pending
-- Base commit: `6dda138`
-- Head commit: pending
+- Pull request: [#1](https://github.com/sachinkundu/bettaview/pull/1)
+- Base commit: `6dda138961293392bc0e86e81beb4e99a7a0845e`
+- Fixture commit: `bca14988ff34c006c6f9c93e7ddf7f47b1edfd1e`
 - Changed Markdown fixture: `fixtures/rendered-review.md`
+
+## Native changed-line thread probe
+
+- Authentication: authenticated GitHub user token; GitHub App proof remains open.
+- Anchor: `fixtures/rendered-review.md`, right side, line 9.
+- REST review-comment ID: `3801553071`.
+- GraphQL review-thread ID: `PRRT_kwDOT8EQcs6aAP54`.
+- GitHub review ID: `4957902558`.
+- Read-back: REST and GraphQL both returned the intended file, line, and exact
+  fixture commit.
+- Thread state at read-back: unresolved and not outdated.
+- Provider URL:
+  <https://github.com/sachinkundu/bettaview/pull/1#discussion_r3801553071>
+
+This proves a native changed-line thread can be created and retrieved on the
+real fixture pull request. It does not yet prove rendered-selection mapping or
+GitHub App authentication.
 
 ## Evidence to retain
 
@@ -26,4 +43,3 @@ of repository content.
 - The initial repository bootstrap uses the authenticated GitHub user. A
   least-privilege GitHub App and installation-token proof are still required.
 - No G0 exit criterion has passed merely because this fixture exists.
-
