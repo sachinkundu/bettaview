@@ -1,6 +1,8 @@
 import express from "express";
 import sanitizeHtml from "sanitize-html";
 import {
+  approvalRestriction,
+  batchReviewPayload,
   changedLinesFromPatch,
   chooseAnchorLine,
   extractMermaidBlocks,
@@ -50,6 +52,16 @@ async function pullContext(prUrl) {
   return { identity, pr, files };
 }
 
+async function assertReviewEventAllowed(context, event) {
+  if (event !== "APPROVE") return;
+  const viewer = await github("/user");
+  const restriction = approvalRestriction(viewer.login, context.pr.user.login);
+  if (!restriction) return;
+  const error = new Error(restriction);
+  error.status = 422;
+  throw error;
+}
+
 async function markdownFile(owner, repo, path, ref) {
   const content = await github(`/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`);
   return Buffer.from(content.content, "base64").toString("utf8");
@@ -94,6 +106,63 @@ async function createReviewComment({ context, path, line, body, metadata }) {
   return { comment, duplicate: false };
 }
 
+async function prepareBatchComment(context, draft, sourceCache) {
+  const { identity, pr, files } = context;
+  if (!draft?.body?.trim()) throw new Error("Every unpublished comment needs text.");
+  if (!draft.clientSubmissionId) throw new Error("An unpublished comment is missing its submission identity.");
+  const file = files.find((item) => item.filename === draft.path);
+  if (!file) throw new Error(`${draft.path || "The selected file"} is not part of this pull request.`);
+  let source = sourceCache.get(draft.path);
+  if (!source) {
+    source = await markdownFile(identity.owner, identity.repo, draft.path, pr.head.sha);
+    sourceCache.set(draft.path, source);
+  }
+
+  if (draft.kind === "text-selection") {
+    const range = locateSelectedText(source, draft.selectedText);
+    const line = chooseAnchorLine(range, changedLinesFromPatch(file.patch));
+    return {
+      draft,
+      path: draft.path,
+      line,
+      body: draft.body.trim(),
+      metadata: {
+        kind: "text-selection",
+        clientSubmissionId: draft.clientSubmissionId,
+        repository: `${identity.owner}/${identity.repo}`,
+        pullRequest: identity.number,
+        headSha: pr.head.sha,
+        path: draft.path,
+        sourceFingerprint: fingerprint(source),
+        startLine: range.startLine,
+        endLine: range.endLine,
+        selectedText: range.selectedText,
+      },
+    };
+  }
+
+  if (draft.kind === "mermaid-annotation") {
+    if (!Array.isArray(draft.geometry) || draft.geometry.length === 0) throw new Error("Every diagram comment needs an arrow or circle.");
+    if (!/^data:image\/png;base64,/.test(draft.imageDataUrl || "")) throw new Error("Every diagram comment needs a PNG capture.");
+    const currentBlock = extractMermaidBlocks(source).find((candidate) => candidate.id === draft.block?.id);
+    if (!currentBlock || currentBlock.fingerprint !== draft.block?.fingerprint) {
+      const error = new Error(`The Mermaid diagram in ${draft.path} changed. Refresh before publishing.`);
+      error.status = 409;
+      throw error;
+    }
+    return {
+      draft,
+      path: draft.path,
+      line: chooseAnchorLine(currentBlock, changedLinesFromPatch(file.patch)),
+      body: draft.body.trim(),
+      currentBlock,
+      sourceFingerprint: fingerprint(source),
+    };
+  }
+
+  throw new Error(`Unsupported unpublished comment type: ${draft.kind || "unknown"}.`);
+}
+
 app.get("/api/pr", async (request, response, next) => {
   try {
     const context = await pullContext(request.query.url);
@@ -117,6 +186,11 @@ app.get("/api/pr", async (request, response, next) => {
         mermaidBlocks: extractMermaidBlocks(source),
       };
     }));
+    const [reviewThreads, viewer] = await Promise.all([
+      threads(owner, repo, number),
+      github("/user"),
+    ]);
+    const approveRestriction = approvalRestriction(viewer.login, context.pr.user.login);
     response.json({
       repository: `${owner}/${repo}`,
       number,
@@ -126,8 +200,13 @@ app.get("/api/pr", async (request, response, next) => {
       baseSha: context.pr.base.sha,
       state: context.pr.state,
       draft: context.pr.draft,
+      authorLogin: context.pr.user.login,
+      viewerLogin: viewer.login,
+      reviewCapabilities: {
+        approve: { allowed: !approveRestriction, reason: approveRestriction },
+      },
       files: renderedFiles,
-      threads: await threads(owner, repo, number),
+      threads: reviewThreads,
     });
   } catch (error) {
     next(error);
@@ -192,6 +271,102 @@ async function uploadAnnotation(owner, repo, pr, clientSubmissionId, dataUrl) {
   return { imageUrl, blobSha: result.content.sha, path };
 }
 
+app.post("/api/comments/batch", async (request, response, next) => {
+  try {
+    const { prUrl, headSha, event = "COMMENT", comments } = request.body;
+    if (!Array.isArray(comments) || comments.length === 0) throw new Error("Add at least one comment before publishing.");
+    if (comments.length > 50) throw new Error("Publish at most 50 comments in one review.");
+    if (!["COMMENT", "APPROVE", "REQUEST_CHANGES"].includes(event)) throw new Error("Unsupported review state.");
+    const context = await pullContext(prUrl);
+    assertHead(context.pr, headSha);
+    await assertReviewEventAllowed(context, event);
+
+    const ids = comments.map((comment) => comment.clientSubmissionId);
+    if (new Set(ids).size !== ids.length) throw new Error("Each unpublished comment must have a unique submission identity.");
+    const priorComments = await github(`/repos/${context.identity.owner}/${context.identity.repo}/pulls/${context.identity.number}/comments?per_page=100`);
+    const priorIds = new Set(priorComments.map((comment) => readMarker(comment.body)?.clientSubmissionId).filter(Boolean));
+    const unpublished = comments.filter((comment) => !priorIds.has(comment.clientSubmissionId));
+    if (!unpublished.length) return response.json({ review: null, published: 0, duplicates: comments.length, assets: [] });
+
+    const replyDrafts = unpublished.filter((draft) => draft.kind === "reply");
+    const commentDrafts = unpublished.filter((draft) => draft.kind !== "reply");
+    for (const draft of replyDrafts) {
+      if (!draft.body?.trim()) throw new Error("Every unpublished reply needs text.");
+      if (!priorComments.some((comment) => comment.id === Number(draft.commentId))) {
+        throw new Error("A reply target is no longer part of this pull request. Refresh before publishing.");
+      }
+    }
+
+    const sourceCache = new Map();
+    const prepared = [];
+    for (const draft of commentDrafts) prepared.push(await prepareBatchComment(context, draft, sourceCache));
+
+    const assets = [];
+    for (const item of prepared) {
+      if (item.draft.kind !== "mermaid-annotation") continue;
+      const asset = await uploadAnnotation(
+        context.identity.owner,
+        context.identity.repo,
+        context.pr,
+        item.draft.clientSubmissionId,
+        item.draft.imageDataUrl,
+      );
+      assets.push(asset);
+      item.metadata = {
+        kind: "mermaid-annotation",
+        clientSubmissionId: item.draft.clientSubmissionId,
+        repository: `${context.identity.owner}/${context.identity.repo}`,
+        pullRequest: context.identity.number,
+        headSha,
+        path: item.path,
+        sourceFingerprint: item.sourceFingerprint,
+        diagram: {
+          id: item.currentBlock.id,
+          fingerprint: item.currentBlock.fingerprint,
+          startLine: item.currentBlock.startLine,
+          endLine: item.currentBlock.endLine,
+        },
+        render: item.draft.render,
+        geometry: item.draft.geometry,
+        imageUrl: asset.imageUrl,
+        imageBlobSha: asset.blobSha,
+      };
+      item.body = `${item.body}\n\n![Annotated Mermaid diagram](${asset.imageUrl})`;
+    }
+
+    const reviewComments = prepared.map((item) => ({
+      path: item.path,
+      line: item.line,
+      body: `${item.body}\n\n${marker(item.metadata)}`,
+    }));
+    let review = null;
+    if (reviewComments.length) {
+      review = await github(`/repos/${context.identity.owner}/${context.identity.repo}/pulls/${context.identity.number}/reviews`, {
+        method: "POST",
+        body: JSON.stringify(batchReviewPayload(headSha, reviewComments, event)),
+      });
+    }
+
+    const replies = [];
+    for (const draft of replyDrafts) {
+      const metadata = { kind: "reply", clientSubmissionId: draft.clientSubmissionId, headSha, path: draft.path };
+      replies.push(await github(`/repos/${context.identity.owner}/${context.identity.repo}/pulls/${context.identity.number}/comments/${Number(draft.commentId)}/replies`, {
+        method: "POST",
+        body: JSON.stringify({ body: `${draft.body.trim()}\n\n${marker(metadata)}` }),
+      }));
+    }
+    if (!reviewComments.length && event !== "COMMENT") {
+      review = await github(`/repos/${context.identity.owner}/${context.identity.repo}/pulls/${context.identity.number}/reviews`, {
+        method: "POST",
+        body: JSON.stringify({ commit_id: headSha, event, body: "" }),
+      });
+    }
+    response.json({ review, replies, published: reviewComments.length + replies.length, duplicates: comments.length - unpublished.length, assets });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.post("/api/comments/annotation", async (request, response, next) => {
   try {
     const { prUrl, path, headSha, block, geometry, imageDataUrl, body, clientSubmissionId, render } = request.body;
@@ -251,6 +426,7 @@ app.post("/api/reviews", async (request, response, next) => {
     if (!["COMMENT", "APPROVE", "REQUEST_CHANGES"].includes(event)) throw new Error("Unsupported review state.");
     const context = await pullContext(prUrl);
     assertHead(context.pr, headSha);
+    await assertReviewEventAllowed(context, event);
     const review = await github(`/repos/${context.identity.owner}/${context.identity.repo}/pulls/${context.identity.number}/reviews`, {
       method: "POST",
       body: JSON.stringify({ commit_id: headSha, event, body }),
@@ -259,6 +435,10 @@ app.post("/api/reviews", async (request, response, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+app.use("/api", (_request, response) => {
+  response.status(404).json({ error: "The requested BettaView API endpoint does not exist. Restart the server if it was recently updated." });
 });
 
 app.use(express.static("dist"));

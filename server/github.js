@@ -47,6 +47,11 @@ export function parsePullRequestUrl(value) {
   return { owner: parts[0], repo: parts[1], number: Number(parts[3]) };
 }
 
+export function approvalRestriction(viewerLogin, authorLogin) {
+  if (!viewerLogin || !authorLogin || viewerLogin.toLowerCase() !== authorLogin.toLowerCase()) return null;
+  return "Pull request authors cannot approve their own pull requests.";
+}
+
 export function fingerprint(value) {
   return createHash("sha256").update(value).digest("hex");
 }
@@ -153,6 +158,18 @@ export function readMarker(body = "") {
   } catch {
     return null;
   }
+}
+
+export function batchReviewPayload(headSha, comments, event = "COMMENT") {
+  if (!headSha) throw new Error("A pull request head commit is required.");
+  if (!Array.isArray(comments) || comments.length === 0) throw new Error("Add at least one comment before publishing.");
+  if (!["COMMENT", "APPROVE", "REQUEST_CHANGES"].includes(event)) throw new Error("Unsupported review state.");
+  return {
+    commit_id: headSha,
+    event,
+    body: `BettaView review with ${comments.length} inline comment${comments.length === 1 ? "" : "s"}.`,
+    comments: comments.map(({ path, line, body }) => ({ path, line, side: "RIGHT", body })),
+  };
 }
 
 export function submissionId() {
