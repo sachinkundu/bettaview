@@ -52,6 +52,10 @@ export function approvalRestriction(viewerLogin, authorLogin) {
   return "Pull request authors cannot approve their own pull requests.";
 }
 
+export function isRenderableMarkdownFile(file) {
+  return file?.status !== "removed" && /\.(?:md|markdown)$/i.test(file?.filename || "");
+}
+
 export function fingerprint(value) {
   return createHash("sha256").update(value).digest("hex");
 }
@@ -102,20 +106,60 @@ function lineAtOffset(source, offset) {
   return source.slice(0, offset).split("\n").length;
 }
 
-export function locateSelectedText(source, selectedText) {
+function wordTokensWithOffsets(value) {
+  return [...value.matchAll(/[\p{L}\p{N}_]+/gu)].map((match) => ({
+    value: match[0].toLocaleLowerCase(),
+    offset: match.index,
+    length: match[0].length,
+  }));
+}
+
+function preferredMatch(source, matches, preferredRange) {
+  if (matches.length <= 1) return matches[0] || null;
+  if (!preferredRange?.startLine || !preferredRange?.endLine) return null;
+  const withinRange = matches.filter((match) => {
+    const startLine = lineAtOffset(source, match.startOffset);
+    const endLine = lineAtOffset(source, match.endOffset);
+    return startLine <= preferredRange.endLine && endLine >= preferredRange.startLine;
+  });
+  return withinRange.length === 1 ? withinRange[0] : null;
+}
+
+function locateSelectedWords(source, selectedText, preferredRange) {
+  const needle = wordTokensWithOffsets(selectedText);
+  if (!needle.length) return null;
+  const haystack = wordTokensWithOffsets(source);
+  const matches = [];
+  for (let index = 0; index <= haystack.length - needle.length; index += 1) {
+    if (needle.every((token, tokenIndex) => token.value === haystack[index + tokenIndex].value)) {
+      const first = haystack[index];
+      const last = haystack[index + needle.length - 1];
+      matches.push({ startOffset: first.offset, endOffset: last.offset + last.length - 1 });
+    }
+  }
+  const match = preferredMatch(source, matches, preferredRange);
+  if (!match && matches.length) throw new Error("That selection is ambiguous. Select a longer, unique passage.");
+  return match;
+}
+
+export function locateSelectedText(source, selectedText, preferredRange) {
   const needle = normalizedWithOffsets(selectedText).normalized;
   if (!needle || needle.length < 3) throw new Error("Select at least three visible characters.");
   const haystack = normalizedWithOffsets(source);
-  const first = haystack.normalized.indexOf(needle);
-  if (first < 0) throw new Error("The selected text no longer matches the pull request source.");
-  if (haystack.normalized.indexOf(needle, first + 1) >= 0) {
-    throw new Error("That selection is ambiguous. Select a longer, unique passage.");
+  const exactMatches = [];
+  for (let index = haystack.normalized.indexOf(needle); index >= 0; index = haystack.normalized.indexOf(needle, index + 1)) {
+    exactMatches.push({
+      startOffset: haystack.offsets[index],
+      endOffset: haystack.offsets[index + needle.length - 1],
+    });
   }
-  const startOffset = haystack.offsets[first];
-  const endOffset = haystack.offsets[first + needle.length - 1];
+  const exact = preferredMatch(source, exactMatches, preferredRange);
+  if (!exact && exactMatches.length) throw new Error("That selection is ambiguous. Select a longer, unique passage.");
+  const match = exact || locateSelectedWords(source, selectedText, preferredRange);
+  if (!match) throw new Error("The selected text no longer matches the pull request source.");
   return {
-    startLine: lineAtOffset(source, startOffset),
-    endLine: lineAtOffset(source, endOffset),
+    startLine: lineAtOffset(source, match.startOffset),
+    endLine: lineAtOffset(source, match.endOffset),
     selectedText: needle,
   };
 }

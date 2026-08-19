@@ -6,6 +6,7 @@ import {
   changedLinesFromPatch,
   chooseAnchorLine,
   extractMermaidBlocks,
+  isRenderableMarkdownFile,
   locateSelectedText,
   marker,
   parsePullRequestUrl,
@@ -26,6 +27,14 @@ test("parses a GitHub pull request URL", () => {
   });
 });
 
+test("renders Markdown files available at the pull request head", () => {
+  assert.equal(isRenderableMarkdownFile({ filename: "README.md", status: "modified" }), true);
+  assert.equal(isRenderableMarkdownFile({ filename: "docs/guide.markdown", status: "added" }), true);
+  assert.equal(isRenderableMarkdownFile({ filename: "new/prompt.md", status: "renamed" }), true);
+  assert.equal(isRenderableMarkdownFile({ filename: "old/shared-rules.md", status: "removed" }), false);
+  assert.equal(isRenderableMarkdownFile({ filename: "src/main.js", status: "modified" }), false);
+});
+
 test("locates whitespace-normalized prose in source", () => {
   const source = "# Title\n\nA sentence split\nacross two lines.\n";
   assert.deepEqual(locateSelectedText(source, "A sentence split across two lines."), {
@@ -33,8 +42,29 @@ test("locates whitespace-normalized prose in source", () => {
   });
 });
 
+test("locates rendered prose when inline Markdown punctuation is absent", () => {
+  const source = "- Replace the roster with Agent Skills-standard `SKILL.md` files.\n";
+  assert.deepEqual(
+    locateSelectedText(source, "Replace the roster with Agent Skills-standard SKILL.md files."),
+    {
+      startLine: 1,
+      endLine: 1,
+      selectedText: "Replace the roster with Agent Skills-standard SKILL.md files.",
+    },
+  );
+});
+
 test("rejects ambiguous selection", () => {
   assert.throws(() => locateSelectedText("same\n\nsame", "same"), /ambiguous/);
+});
+
+test("uses the rendered line context to disambiguate repeated text", () => {
+  const source = "review_bot/agent_skills/ first\n\nreview_bot/agent_skills/ second\n";
+  assert.deepEqual(locateSelectedText(source, "review_bot/agent_skills/", { startLine: 3, endLine: 3 }), {
+    startLine: 3,
+    endLine: 3,
+    selectedText: "review_bot/agent_skills/",
+  });
 });
 
 test("extracts Mermaid identity and exact source range", () => {

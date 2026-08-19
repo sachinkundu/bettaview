@@ -17,8 +17,9 @@ npm run build
 npm start
 ```
 
-Open <http://127.0.0.1:4174>. The portal defaults to the live fixture pull
-request, but another GitHub pull request URL can be entered in the header.
+Open <http://127.0.0.1:4174>. The portal remembers the most recently opened
+pull request and restores it while it remains open on GitHub. Otherwise, it
+starts with a centered field for an open GitHub pull request URL.
 
 - Select unique text in rendered Markdown to open a comment box beside the
   selection.

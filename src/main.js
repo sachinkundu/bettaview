@@ -2,20 +2,26 @@ import mermaid from "mermaid";
 import { toPng } from "html-to-image";
 import { request } from "./api.js";
 import { annotationSvgAttributes, circleSvgGeometry, startDrawing } from "./annotation-geometry.js";
+import { DEFAULT_FILE_RAIL_WIDTH, MIN_FILE_RAIL_WIDTH, clampFileRailWidth, maxFileRailWidth } from "./file-rail.js";
+import { highlightCodeBlocks } from "./syntax-highlighting.js";
+import { clearRecentPullRequest, getRecentPullRequest, saveRecentPullRequest } from "./recent-pull-request.js";
+import { applyTheme, getInitialTheme, nextTheme } from "./theme.js";
 import { activeThreadReferences, draftReferenceKey, threadReferenceKey } from "./thread-links.js";
 import "./styles.css";
 
-const defaultPullRequest = "https://github.com/sachinkundu/bettaview/pull/1";
-
 const state = {
-  prUrl: defaultPullRequest,
+  prUrl: getRecentPullRequest(),
   data: null,
   activePath: null,
   selectedText: "",
   selectionRange: null,
   drafts: [],
   reviewEvent: "COMMENT",
+  theme: getInitialTheme(),
+  fileRailWidth: DEFAULT_FILE_RAIL_WIDTH,
 };
+
+applyTheme(state.theme, { persist: false });
 
 mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral", fontFamily: "Inter, ui-sans-serif, system-ui" });
 
@@ -50,17 +56,18 @@ function shell() {
         <span class="brand-mark">β</span>
         <span><strong>BettaView</strong><small>Rendered review experiment</small></span>
       </a>
-      <form id="pr-form" class="pr-form">
-        <label for="pr-url">Pull request</label>
-        <input id="pr-url" name="url" type="url" value="${escapeHtml(state.prUrl)}" required />
+      <form id="pr-form" class="pr-form" hidden>
+        <label for="header-pr-url">Pull request</label>
+        <input id="header-pr-url" name="url" type="url" value="${escapeHtml(state.prUrl)}" required />
         <button type="submit" class="button primary">Open</button>
       </form>
+      <button id="theme-toggle" class="theme-toggle" type="button">
+        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span class="theme-toggle-label"></span>
+      </button>
     </header>
     <div id="notice" class="notice" hidden></div>
-    <main id="workspace" class="empty-state">
-      <div class="loader"></div>
-      <p>Loading the exact pull request head from GitHub…</p>
-    </main>
+    <main id="workspace" class="empty-state"></main>
     <aside id="selection-composer" class="selection-composer" hidden>
       <button class="composer-close" aria-label="Close">×</button>
       <span class="eyebrow">Selected rendered text</span>
@@ -73,20 +80,66 @@ function shell() {
       <button id="publish-review" class="button primary">Publish review</button>
     </div>
   `;
-  document.querySelector("#pr-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!confirmDraftDiscard("Opening another pull request")) return;
-    state.prUrl = new FormData(event.currentTarget).get("url").trim();
-    await loadPullRequest();
-  });
+  document.querySelector("#pr-form").addEventListener("submit", openPullRequest);
   document.querySelector(".composer-close").addEventListener("click", closeSelectionComposer);
   document.querySelector("#submit-selection").addEventListener("click", stageSelectionComment);
   document.querySelector("#publish-review").addEventListener("click", publishReview);
+  document.querySelector("#theme-toggle").addEventListener("click", () => {
+    state.theme = applyTheme(nextTheme(state.theme));
+    updateThemeToggle();
+  });
+  updateThemeToggle();
   window.addEventListener("beforeunload", (event) => {
     if (!state.drafts.length) return;
     event.preventDefault();
     event.returnValue = "";
   });
+  window.addEventListener("resize", () => setFileRailWidth(state.fileRailWidth));
+}
+
+async function openPullRequest(event) {
+  event.preventDefault();
+  if (!confirmDraftDiscard("Opening another pull request")) return;
+  state.prUrl = new FormData(event.currentTarget).get("url").trim();
+  await loadPullRequest({ preservePath: false });
+}
+
+function syncPullRequestForm() {
+  const form = document.querySelector("#pr-form");
+  if (!form) return;
+  form.hidden = !state.data;
+  form.elements.url.value = state.prUrl;
+}
+
+function renderOpenPrompt(message = "") {
+  state.data = null;
+  state.activePath = null;
+  syncPullRequestForm();
+  const workspace = document.querySelector("#workspace");
+  workspace.className = "empty-state";
+  workspace.innerHTML = `
+    <section class="open-pr-card">
+      <span class="eyebrow">Open pull request</span>
+      <h1>Review rendered Markdown</h1>
+      <p>${escapeHtml(message || "Paste the URL of an open GitHub pull request to begin.")}</p>
+      <form id="empty-pr-form" class="empty-pr-form">
+        <label class="sr-only" for="empty-pr-url">GitHub pull request URL</label>
+        <input id="empty-pr-url" name="url" type="url" value="${escapeHtml(state.prUrl)}" placeholder="https://github.com/owner/repository/pull/123" autocomplete="url" autofocus required />
+        <button type="submit" class="button primary">Open pull request</button>
+      </form>
+    </section>
+  `;
+  document.querySelector("#empty-pr-form").addEventListener("submit", openPullRequest);
+}
+
+function updateThemeToggle() {
+  const toggle = document.querySelector("#theme-toggle");
+  if (!toggle) return;
+  const next = nextTheme(state.theme);
+  toggle.querySelector(".theme-toggle-icon").textContent = next === "light" ? "☀" : "☾";
+  toggle.querySelector(".theme-toggle-label").textContent = `${next === "light" ? "Light" : "Dark"} mode`;
+  toggle.setAttribute("aria-label", `Switch to ${next} theme`);
+  toggle.title = `Switch to ${next} theme`;
 }
 
 function confirmDraftDiscard(action) {
@@ -98,19 +151,30 @@ function confirmDraftDiscard(action) {
   return true;
 }
 
-async function loadPullRequest({ preservePath = true } = {}) {
+async function loadPullRequest({ preservePath = true, restoring = false } = {}) {
   const workspace = document.querySelector("#workspace");
   workspace.className = "empty-state";
   workspace.innerHTML = `<div class="loader"></div><p>Loading rendered Markdown and native threads from GitHub…</p>`;
   try {
     const data = await request(`/api/pr?url=${encodeURIComponent(state.prUrl)}`);
+    if (data.state !== "open") {
+      if (restoring) {
+        clearRecentPullRequest();
+        state.prUrl = "";
+      }
+      renderOpenPrompt("That pull request is no longer open. Enter another pull request URL.");
+      return;
+    }
     state.data = data;
+    state.prUrl = data.url;
+    saveRecentPullRequest(state.prUrl);
+    syncPullRequestForm();
     if (!preservePath || !data.files.some((file) => file.path === state.activePath)) {
       state.activePath = data.files.find((file) => file.mermaidBlocks.length > 0)?.path || data.files[0]?.path;
     }
     renderWorkspace();
   } catch (error) {
-    workspace.innerHTML = `<div class="error-card"><strong>Could not open that pull request.</strong><p>${escapeHtml(error.message)}</p></div>`;
+    renderOpenPrompt(`Could not open that pull request: ${error.message}`);
   }
 }
 
@@ -130,7 +194,7 @@ function renderWorkspace() {
         <div class="commit-chip"><span></span>Exact head <code>${shortSha(data.headSha)}</code></div>
       </div>
       <nav class="file-list" aria-label="Changed Markdown files">
-        ${data.files.map((item) => `<button class="file-link ${item.path === state.activePath ? "active" : ""}" data-path="${escapeHtml(item.path)}"><span>${escapeHtml(item.path.split("/").at(-1))}</span><small>+${item.additions} −${item.deletions}</small></button>`).join("") || `<p class="muted">No changed Markdown files.</p>`}
+        ${data.files.map((item) => `<button class="file-link ${item.path === state.activePath ? "active" : ""}" data-path="${escapeHtml(item.path)}" title="${escapeHtml(item.path)}"><span>${escapeHtml(item.path)}</span><small>+${item.additions} −${item.deletions}</small></button>`).join("") || `<p class="muted">No changed Markdown files.</p>`}
       </nav>
       <div class="review-actions">
         <span class="eyebrow">Submit review state</span>
@@ -139,6 +203,7 @@ function renderWorkspace() {
         <button data-review="REQUEST_CHANGES" class="button subtle danger ${state.reviewEvent === "REQUEST_CHANGES" ? "selected" : ""}">Request changes</button>
         ${approveCapability.allowed ? "" : `<p class="review-restriction">Signed in as @${escapeHtml(data.viewerLogin)}. ${escapeHtml(approveCapability.reason)}</p>`}
       </div>
+      <div class="file-rail-resizer" role="separator" aria-label="Resize changed files sidebar" aria-orientation="vertical" aria-valuemin="${MIN_FILE_RAIL_WIDTH}" tabindex="0"></div>
     </aside>
     <section class="document-column">
       ${file ? `
@@ -155,19 +220,68 @@ function renderWorkspace() {
     </aside>
   `;
 
+  setFileRailWidth(state.fileRailWidth);
+  bindFileRailResizer();
+
   document.querySelectorAll(".file-link").forEach((button) => button.addEventListener("click", () => {
     state.activePath = button.dataset.path;
     closeSelectionComposer();
     renderWorkspace();
   }));
   document.querySelector("#refresh")?.addEventListener("click", () => {
-    if (confirmDraftDiscard("Refreshing from GitHub")) loadPullRequest();
+    loadPullRequest();
   });
   document.querySelectorAll("[data-review]").forEach((button) => button.addEventListener("click", () => submitReview(button.dataset.review)));
   document.querySelector("#rendered-document")?.addEventListener("mouseup", handleTextSelection);
   bindThreadActions();
   updateDraftBar();
-  if (file) renderMermaidDiagrams(file);
+  if (file) {
+    highlightCodeBlocks(document.querySelector("#rendered-document"));
+    renderMermaidDiagrams(file);
+  }
+}
+
+function setFileRailWidth(width) {
+  const viewportWidth = document.documentElement.clientWidth;
+  state.fileRailWidth = clampFileRailWidth(width, viewportWidth);
+  const workspace = document.querySelector("#workspace");
+  workspace?.style.setProperty("--file-rail-width", `${state.fileRailWidth}px`);
+  const resizer = workspace?.querySelector(".file-rail-resizer");
+  resizer?.setAttribute("aria-valuenow", String(Math.round(state.fileRailWidth)));
+  resizer?.setAttribute("aria-valuemax", String(maxFileRailWidth(viewportWidth)));
+}
+
+function bindFileRailResizer() {
+  const resizer = document.querySelector(".file-rail-resizer");
+  if (!resizer) return;
+
+  resizer.addEventListener("pointerdown", (event) => {
+    const startX = event.clientX;
+    const startWidth = state.fileRailWidth;
+    resizer.setPointerCapture(event.pointerId);
+    document.body.classList.add("resizing-file-rail");
+
+    const resize = (moveEvent) => setFileRailWidth(startWidth + moveEvent.clientX - startX);
+    const finish = () => {
+      document.body.classList.remove("resizing-file-rail");
+      resizer.removeEventListener("pointermove", resize);
+      resizer.removeEventListener("pointerup", finish);
+      resizer.removeEventListener("pointercancel", finish);
+    };
+
+    resizer.addEventListener("pointermove", resize);
+    resizer.addEventListener("pointerup", finish);
+    resizer.addEventListener("pointercancel", finish);
+  });
+
+  resizer.addEventListener("keydown", (event) => {
+    const steps = { ArrowLeft: -20, ArrowRight: 20 };
+    if (event.key in steps) setFileRailWidth(state.fileRailWidth + steps[event.key]);
+    else if (event.key === "Home") setFileRailWidth(MIN_FILE_RAIL_WIDTH);
+    else if (event.key === "End") setFileRailWidth(maxFileRailWidth(document.documentElement.clientWidth));
+    else return;
+    event.preventDefault();
+  });
 }
 
 function threadsForActiveFile() {
@@ -276,11 +390,16 @@ function renderThreads(threads) {
 
 function handleTextSelection() {
   const selection = window.getSelection();
-  const text = selection?.toString().trim();
-  if (!text || text.length < 3 || !selection.rangeCount) return;
+  if (!selection?.rangeCount) return;
   const range = selection.getRangeAt(0);
   const documentRoot = document.querySelector("#rendered-document");
   if (!documentRoot.contains(range.commonAncestorContainer)) return;
+  const fragment = range.cloneContents();
+  const selectionContent = document.createElement("div");
+  selectionContent.append(fragment);
+  selectionContent.querySelectorAll(".comment-position-marker, .comment-position-group, .diagram-toolbar, .diagram-comment").forEach((element) => element.remove());
+  const text = selectionContent.textContent.trim();
+  if (!text || text.length < 3) return;
   state.selectedText = text;
   state.selectionRange = range.cloneRange();
   const composer = document.querySelector("#selection-composer");
@@ -314,7 +433,8 @@ function stageSelectionComment() {
   const body = document.querySelector("#selection-comment").value;
   if (!state.selectedText) return setNotice("Select text in the rendered document first.", "error");
   if (!body.trim()) return setNotice("Write a comment before adding it.", "error");
-  const lines = locateVisibleLines(state.data.files.find((file) => file.path === state.activePath).source, state.selectedText);
+  const file = state.data.files.find((item) => item.path === state.activePath);
+  const lines = locateSelectionLines(file, state.selectedText, state.selectionRange);
   state.drafts.push({
     kind: "text-selection",
     prUrl: state.prUrl,
@@ -460,7 +580,7 @@ function setupDrawing(card, block, file) {
     button.disabled = true;
     button.textContent = "Capturing…";
     try {
-      const imageDataUrl = await toPng(stage, { pixelRatio: 2, backgroundColor: "#fbfaf7" });
+      const imageDataUrl = await toPng(stage, { pixelRatio: 2, backgroundColor: getComputedStyle(stage).backgroundColor });
       state.drafts.push({
         kind: "mermaid-annotation",
         prUrl: state.prUrl,
@@ -588,6 +708,33 @@ function locateVisibleLines(source, visibleText) {
   const lastMatches = matches.filter((match) => match.visibleOffset === lastOffset);
   const end = lastMatches.length === 1 ? lastMatches[0].end : firstMatches[0].end;
   return { startLine: sourceLineAt(source, firstMatches[0].start), endLine: sourceLineAt(source, end) };
+}
+
+function topLevelSelectionElement(range) {
+  const root = document.querySelector("#rendered-document");
+  let element = range?.commonAncestorContainer?.nodeType === Node.ELEMENT_NODE
+    ? range.commonAncestorContainer
+    : range?.commonAncestorContainer?.parentElement;
+  while (element && element.parentElement !== root) element = element.parentElement;
+  return element?.parentElement === root ? element : null;
+}
+
+function locateSelectionLines(file, selectedText, range) {
+  const element = topLevelSelectionElement(range);
+  const sourceStart = Number(element?.dataset.sourceStart);
+  const sourceEnd = Number(element?.dataset.sourceEnd);
+  if (sourceStart && sourceEnd) {
+    const sourceSlice = file.source.split("\n").slice(sourceStart - 1, sourceEnd).join("\n");
+    const local = locateVisibleLines(sourceSlice, selectedText);
+    if (local) {
+      return {
+        startLine: sourceStart + local.startLine - 1,
+        endLine: sourceStart + local.endLine - 1,
+      };
+    }
+    return { startLine: sourceStart, endLine: sourceEnd };
+  }
+  return locateVisibleLines(file.source, selectedText);
 }
 
 function decorateDocumentLines(file) {
@@ -729,4 +876,8 @@ function goToLine(path, line) {
 }
 
 shell();
-loadPullRequest({ preservePath: false });
+if (state.prUrl) {
+  loadPullRequest({ preservePath: false, restoring: true });
+} else {
+  renderOpenPrompt();
+}

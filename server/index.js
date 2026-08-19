@@ -8,6 +8,7 @@ import {
   extractMermaidBlocks,
   fingerprint,
   github,
+  isRenderableMarkdownFile,
   locateSelectedText,
   marker,
   parsePullRequestUrl,
@@ -119,7 +120,10 @@ async function prepareBatchComment(context, draft, sourceCache) {
   }
 
   if (draft.kind === "text-selection") {
-    const range = locateSelectedText(source, draft.selectedText);
+    const range = locateSelectedText(source, draft.selectedText, {
+      startLine: Number(draft.startLine),
+      endLine: Number(draft.endLine),
+    });
     const line = chooseAnchorLine(range, changedLinesFromPatch(file.patch));
     return {
       draft,
@@ -167,7 +171,7 @@ app.get("/api/pr", async (request, response, next) => {
   try {
     const context = await pullContext(request.query.url);
     const { owner, repo, number } = context.identity;
-    const markdownFiles = context.files.filter((file) => /\.md(?:own)?$/i.test(file.filename));
+    const markdownFiles = context.files.filter(isRenderableMarkdownFile);
     const renderedFiles = await Promise.all(markdownFiles.map(async (file) => {
       const source = await markdownFile(owner, repo, file.filename, context.pr.head.sha);
       const rendered = await github("/markdown", {
