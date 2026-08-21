@@ -1,0 +1,944 @@
+{
+  "version": 3,
+  "change": "review-history-aware-rechecks",
+  "review": {
+    "kind": "semantic-spec-review",
+    "reviewer": {
+      "type": "llm",
+      "name": "codex-cli",
+      "version": "gpt-5.6-sol"
+    },
+    "promptVersion": "openspec-semantic-traceability-bidirectional-v2",
+    "reviewedAt": "2026-08-20T12:24:37Z",
+    "overall": "findings",
+    "documents": [
+      {
+        "file": "proposal.md",
+        "sha256": "8236a97d8aaf8369f8b7e322398d661e06e8884abde2a60092d8321e12a6edb1"
+      },
+      {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "sha256": "dae418808f78d79b4252316c058b3372f2312a6aff09122c7b4a3e9937d47aaa"
+      },
+      {
+        "file": "specs/github-integration/spec.md",
+        "sha256": "2da5ae8b860feaa14aa47244175816ff9ffc67abf155b2abad8e47e111319342"
+      },
+      {
+        "file": "specs/review-posting/spec.md",
+        "sha256": "fa808ff8c94f4fdf62bdac78c7053cc338284f7666f5a91b8b4b24ac6bac94bf"
+      },
+      {
+        "file": "specs/agent-pipeline/spec.md",
+        "sha256": "5f2c92937cf4b330dc2555f9a0291863bf65a95adf486df4bdbe64016d031b33"
+      },
+      {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "sha256": "b72aa3859f100a9f8c2d197a72ac15a97e62c5a7f3087758795be527483795a1"
+      },
+      {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "sha256": "ea5638d86c3ef7bfeaca7589e1c6d6b707283715766ae39bc8b908af96401496"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "path": "review-bot/review-rechecks",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 20,
+        "endLine": 20,
+        "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+      },
+      "specFile": "specs/review-bot/review-rechecks/spec.md",
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "Snapshots, identity, matching, lifecycle, four settled or uncertain prior-finding states, and deterministic planning are specified, but the declared fifth state new is absent from the classification contract."
+      }
+    },
+    {
+      "path": "github-integration",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 24,
+        "endLine": 24,
+        "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+      },
+      "specFile": "specs/github-integration/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "All declared provider reads, identity verification, reply routing, and created-object read-back behavior are specified."
+      }
+    },
+    {
+      "path": "review-posting",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 25,
+        "endLine": 25,
+        "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+      },
+      "specFile": "specs/review-posting/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirements specify stable markers, retained pre-mutation plans, constrained status actions, freshness guards, idempotency, and unchanged thread resolution."
+      }
+    },
+    {
+      "path": "agent-pipeline",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 26,
+        "endLine": 26,
+        "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+      },
+      "specFile": "specs/agent-pipeline/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirements preserve the registered pipeline, constrain reviewer and coordinator targets, provide complete coordination context, and validate attributed results."
+      }
+    },
+    {
+      "path": "review-bot/agent-skill-registry",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 27,
+        "endLine": 27,
+        "quote": "- `review-bot/agent-skill-registry`: Add host-owned symbolic review-history resources and prevent pull request content from shadowing or expanding them."
+      },
+      "specFile": "specs/review-bot/agent-skill-registry/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirements define isolated host-owned symbolic recheck resources, audit metadata, deterministic bounds, and fail-closed handling of incomplete targets."
+      }
+    },
+    {
+      "path": "review-bot/diff-filtering",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 28,
+        "endLine": 28,
+        "quote": "- `review-bot/diff-filtering`: Apply existing path exclusions to file-scoped history views without removing excluded conversations from the complete audit snapshot or final safety checks."
+      },
+      "specFile": "specs/review-bot/diff-filtering/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirements apply existing path exclusions only to scoped reviewer views while preserving the complete canonical conversation for coordination and safety checks."
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "review-rechecks-select-review-mode",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 7,
+        "endLine": 32
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "Stable finding identity, prior/current classification, and identical-rerun suppression support the specified initial and recheck lifecycle."
+      }
+    },
+    {
+      "id": "review-rechecks-retain-canonical-provider-conversation-snapshot",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Fetch the complete, fully paginated pull request review history, including reviews, inline comments and replies, general comments, and review-thread resolution state when GitHub exposes it to the App."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 34,
+        "endLine": 47
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement directly specifies complete normalized history, deterministic ordering and digesting, preserved provider fields, nullable state, and untrusted text."
+      }
+    },
+    {
+      "id": "review-rechecks-assign-stable-identities",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 49,
+        "endLine": 62
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It implements stable identities and binds owned targets to verified provider objects retained after creation."
+      }
+    },
+    {
+      "id": "review-rechecks-match-unmarked-legacy-findings",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 64,
+        "endLine": 73
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It requires verified App authorship, unique evidence-based matching, and an ambiguous no-mutation outcome when matching is not unique."
+      }
+    },
+    {
+      "id": "review-rechecks-classify-only-prior-findings",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 75,
+        "endLine": 96
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It defines evidence-based fixed, unfixed, obsolete, and ambiguous outcomes for owned prior targets and prevents unrelated recheck mutations."
+      }
+    },
+    {
+      "id": "review-rechecks-guard-and-replay-plans",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 13,
+          "endLine": 13,
+          "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 98,
+        "endLine": 111
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It guards exact-head and conversation freshness and derives repeatable action identity from stable inputs."
+      }
+    },
+    {
+      "id": "github-integration-fetch-complete-pull-request-conversation",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Fetch the complete, fully paginated pull request review history, including reviews, inline comments and replies, general comments, and review-thread resolution state when GitHub exposes it to the App."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 3,
+        "endLine": 20
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It mandates full independent pagination of required REST and GraphQL connections and records unknown resolution when GraphQL cannot provide complete state."
+      }
+    },
+    {
+      "id": "github-integration-establish-provider-owned-review-objects",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 22,
+        "endLine": 31
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "Verified provider author identity supplies the ownership boundary needed for stable targets and owned mutation routing."
+      }
+    },
+    {
+      "id": "github-integration-create-recheck-statuses",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 33,
+        "endLine": 46
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It maps owned inline findings to top-level replies and non-thread findings to general status comments, with fail-closed parent selection."
+      }
+    },
+    {
+      "id": "github-integration-read-back-created-objects",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 48,
+        "endLine": 65
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It reads back reviews, enumerates nested inline comments, verifies replies and general comments, and retains their provider identities and URLs."
+      }
+    },
+    {
+      "id": "review-posting-mark-initial-runs-and-findings",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 3,
+        "endLine": 16
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "Versioned run and finding markers implement stable identity and duplicate detection while excluding untrusted or sensitive marker inputs."
+      }
+    },
+    {
+      "id": "review-posting-separate-classification-from-mutation",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 18,
+        "endLine": 31
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It retains validated classifications and plans before any provider write and makes dry-run execution mutation-free."
+      }
+    },
+    {
+      "id": "review-posting-restrict-recheck-posting",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 33,
+        "endLine": 46
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It routes settled statuses to existing conversations, suppresses ambiguous mutations, and prohibits new reviews, history edits, and resolution changes."
+      }
+    },
+    {
+      "id": "review-posting-guard-and-deduplicate-mutations",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 13,
+          "endLine": 13,
+          "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 48,
+        "endLine": 65
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It checks head and complete conversation before every action, handles verified same-plan writes, and suppresses stable identities already present."
+      }
+    },
+    {
+      "id": "agent-pipeline-run-prior-finding-evaluation",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 3,
+        "endLine": 16
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It gives reviewers scoped prior targets through the existing pipeline and rejects identities outside those assignments."
+      }
+    },
+    {
+      "id": "agent-pipeline-coordinate-only-supplied-recheck-targets",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 18,
+        "endLine": 31
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It gives the coordinator complete history and targets, requires exactly one allowed result per applicable target, and excludes provider events from classification output."
+      }
+    },
+    {
+      "id": "agent-pipeline-treat-recheck-history-as-untrusted-task-data",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 33,
+        "endLine": 42
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It explicitly separates host-authored assignments and schemas from provider text and prevents that text from expanding authority or outputs."
+      }
+    },
+    {
+      "id": "agent-skill-registry-provide-trusted-recheck-resources",
+      "capability": "review-bot/agent-skill-registry",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "startLine": 3,
+        "endLine": 20
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It provides reviewer and coordinator history resources outside the checkout and preserves registry isolation and auditable assignment."
+      }
+    },
+    {
+      "id": "agent-skill-registry-bound-reviewer-history",
+      "capability": "review-bot/agent-skill-registry",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "startLine": 22,
+        "endLine": 31
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "Deterministic bounds and atomic target evidence make filtered reviewer views repeatable without partially supplying required identity."
+      }
+    },
+    {
+      "id": "diff-filtering-apply-existing-path-exclusions",
+      "capability": "review-bot/diff-filtering",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "startLine": 3,
+        "endLine": 16
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It defines deterministic use of existing path classifications for reviewer history without inventing classifications for unbound objects."
+      }
+    },
+    {
+      "id": "diff-filtering-preserve-complete-history",
+      "capability": "review-bot/diff-filtering",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 13,
+          "endLine": 13,
+          "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "startLine": 18,
+        "endLine": 27
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "It keeps omitted objects in the canonical snapshot for coordination, freshness, idempotency, validation, safety, and audit."
+      }
+    }
+  ],
+  "proposalStatements": [
+    {
+      "id": "proposal-statement-7",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 7,
+        "endLine": 7,
+        "quote": "- Fetch the complete, fully paginated pull request review history, including reviews, inline comments and replies, general comments, and review-thread resolution state when GitHub exposes it to the App."
+      },
+      "requirementLinks": [
+        "github-integration-fetch-complete-pull-request-conversation",
+        "review-rechecks-retain-canonical-provider-conversation-snapshot"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements mandate complete paginated REST and GraphQL conversation reads and retain every fetched provider object in the canonical snapshot."
+    },
+    {
+      "id": "proposal-statement-8",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 8,
+        "endLine": 8,
+        "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+      },
+      "requirementLinks": [
+        "github-integration-fetch-complete-pull-request-conversation",
+        "review-rechecks-retain-canonical-provider-conversation-snapshot",
+        "diff-filtering-preserve-complete-history"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements define versioned deterministic normalization, a canonical digest, preserved provider identities, complete canonical-history retention, and unknown thread state when GraphQL is unavailable."
+    },
+    {
+      "id": "proposal-statement-9",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 9,
+        "endLine": 9,
+        "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+      },
+      "requirementLinks": [
+        "agent-pipeline-run-prior-finding-evaluation",
+        "agent-pipeline-coordinate-only-supplied-recheck-targets",
+        "agent-pipeline-treat-recheck-history-as-untrusted-task-data",
+        "agent-skill-registry-provide-trusted-recheck-resources",
+        "agent-skill-registry-bound-reviewer-history",
+        "diff-filtering-apply-existing-path-exclusions",
+        "diff-filtering-preserve-complete-history",
+        "review-rechecks-retain-canonical-provider-conversation-snapshot",
+        "review-posting-mark-initial-runs-and-findings"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements provide deterministic reviewer-scoped resources, the complete coordinator conversation, filtering boundaries, and explicit treatment of provider text as untrusted data."
+    },
+    {
+      "id": "proposal-statement-10",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 10,
+        "endLine": 10,
+        "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+      },
+      "requirementLinks": [
+        "github-integration-establish-provider-owned-review-objects",
+        "review-rechecks-select-review-mode",
+        "review-rechecks-assign-stable-identities",
+        "review-rechecks-match-unmarked-legacy-findings",
+        "review-posting-mark-initial-runs-and-findings"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements assign stable identities to new findings, establish ownership from verified provider authorship, and require unique conservative evidence for legacy matching."
+    },
+    {
+      "id": "proposal-statement-11",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 11,
+        "endLine": 11,
+        "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+      },
+      "requirementLinks": [
+        "agent-pipeline-run-prior-finding-evaluation",
+        "agent-pipeline-coordinate-only-supplied-recheck-targets",
+        "review-rechecks-select-review-mode",
+        "review-rechecks-match-unmarked-legacy-findings",
+        "review-rechecks-classify-only-prior-findings",
+        "review-posting-separate-classification-from-mutation"
+      ],
+      "coverage": "partial",
+      "rationale": "Prior targets receive fixed, unfixed, obsolete, or ambiguous classifications with validated actions, but no requirement defines the declared new classification for current findings."
+    },
+    {
+      "id": "proposal-statement-12",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 12,
+        "endLine": 12,
+        "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+      },
+      "requirementLinks": [
+        "agent-pipeline-coordinate-only-supplied-recheck-targets",
+        "github-integration-establish-provider-owned-review-objects",
+        "github-integration-create-recheck-statuses",
+        "review-rechecks-classify-only-prior-findings",
+        "review-posting-separate-classification-from-mutation",
+        "review-posting-restrict-recheck-posting"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements retain classifications before mutation, route settled owned findings to replies or general comments, and prohibit mutations for ambiguous findings."
+    },
+    {
+      "id": "proposal-statement-13",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 13,
+        "endLine": 13,
+        "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+      },
+      "requirementLinks": [
+        "diff-filtering-preserve-complete-history",
+        "review-rechecks-guard-and-replay-plans",
+        "review-posting-guard-and-deduplicate-mutations"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements re-fetch and compare both head and complete conversation immediately before mutation, retain stale results, and stop posting on change."
+    },
+    {
+      "id": "proposal-statement-14",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 14,
+        "endLine": 14,
+        "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+      },
+      "requirementLinks": [
+        "github-integration-read-back-created-objects",
+        "diff-filtering-preserve-complete-history",
+        "review-rechecks-select-review-mode",
+        "review-rechecks-assign-stable-identities",
+        "review-rechecks-guard-and-replay-plans",
+        "review-posting-mark-initial-runs-and-findings",
+        "review-posting-restrict-recheck-posting",
+        "review-posting-guard-and-deduplicate-mutations"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The requirements verify and retain created provider identities and URLs, suppress identical repeated actions, and prohibit changing review-thread resolution."
+    }
+  ],
+  "findings": [
+    {
+      "id": "missing-new-finding-classification",
+      "type": "missing_coverage",
+      "message": "The proposal declares a five-state classification including new, but the classification requirement enumerates only fixed, unfixed, obsolete, and ambiguous and explicitly omits newly discovered defects; no requirement defines or emits the new state.",
+      "capability": "review-bot/review-rechecks",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 75,
+        "endLine": 96
+      }
+    }
+  ]
+}

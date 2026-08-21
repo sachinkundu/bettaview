@@ -1,0 +1,166 @@
+{
+  "change": "review-history-aware-rechecks",
+  "review": {
+    "kind": "semantic-spec-review",
+    "reviewer": { "type": "llm", "name": "codex-cli", "version": "session-model" },
+    "promptVersion": "openspec-semantic-traceability-line-ids-v1",
+    "reviewedAt": "2026-08-20T14:34:48+03:00",
+    "overall": "findings"
+  },
+  "passingJudgment": {
+    "coverage": "sufficient",
+    "scope": "in_scope",
+    "minimality": "minimal",
+    "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+  },
+  "capabilities": [
+    {
+      "path": "agent-pipeline",
+      "capabilityLine": 26,
+      "links": [
+        { "id": "agent-pipeline-run-review-agents", "specStartLine": 3, "proposalLines": [9, 11, 26] },
+        { "id": "agent-pipeline-feed-coordinator", "specStartLine": 34, "proposalLines": [9, 11, 26] },
+        { "id": "agent-pipeline-deduplicate", "specStartLine": 69, "proposalLines": [11, 26] },
+        { "id": "agent-pipeline-verdict", "specStartLine": 80, "proposalLines": [11, 26, 35] },
+        { "id": "agent-pipeline-validate-output", "specStartLine": 95, "proposalLines": [11, 12, 26] },
+        { "id": "agent-pipeline-bounded-history", "specStartLine": 112, "proposalLines": [9, 26] },
+        { "id": "agent-pipeline-untrusted-evidence", "specStartLine": 127, "proposalLines": [9, 26] },
+        { "id": "agent-pipeline-mode-coverage", "specStartLine": 138, "proposalLines": [26, 35] }
+      ]
+    },
+    {
+      "path": "github-integration",
+      "capabilityLine": 24,
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirements stay within provider integration, but the created-object read-back requirement does not clearly enumerate inline comments created as children of an initial review."
+      },
+      "links": [
+        { "id": "github-mint-token", "specStartLine": 3, "proposalLines": [24, 35] },
+        { "id": "github-post-review", "specStartLine": 18, "proposalLines": [13, 14, 24, 35] },
+        { "id": "github-provider-identity", "specStartLine": 35, "proposalLines": [10, 24] },
+        { "id": "github-rest-history", "specStartLine": 46, "proposalLines": [7, 24] },
+        { "id": "github-graphql-history", "specStartLine": 61, "proposalLines": [7, 8, 24] },
+        { "id": "github-thread-replies", "specStartLine": 76, "proposalLines": [12, 24] },
+        { "id": "github-status-comments", "specStartLine": 91, "proposalLines": [12, 24] },
+        {
+          "id": "github-provider-readback",
+          "specStartLine": 102,
+          "proposalLines": [14, 24],
+          "judgment": {
+            "coverage": "partial",
+            "scope": "in_scope",
+            "minimality": "minimal",
+            "rationale": "The proposal requires every created provider object to be read back, but the requirement does not explicitly require enumeration and verification of inline comments created with an initial review."
+          }
+        },
+        { "id": "github-sanitized-failures", "specStartLine": 113, "proposalLines": [24, 33] }
+      ]
+    },
+    {
+      "path": "review-bot/agent-skill-registry",
+      "capabilityLine": 27,
+      "links": [
+        { "id": "registry-isolate-resources", "specStartLine": 3, "proposalLines": [9, 27] },
+        { "id": "registry-recheck-resources", "specStartLine": 24, "proposalLines": [9, 27] },
+        { "id": "registry-run-manifest", "specStartLine": 39, "proposalLines": [8, 27] },
+        { "id": "registry-resource-bounds", "specStartLine": 50, "proposalLines": [9, 27, 34] }
+      ]
+    },
+    {
+      "path": "review-bot/diff-filtering",
+      "capabilityLine": 28,
+      "links": [
+        { "id": "filtering-path-exclusions", "specStartLine": 3, "proposalLines": [9, 28] },
+        { "id": "filtering-complete-conversation", "specStartLine": 18, "proposalLines": [8, 9, 28] },
+        { "id": "filtering-exclusion-manifest", "specStartLine": 33, "proposalLines": [9, 28] },
+        { "id": "filtering-no-new-targets", "specStartLine": 48, "proposalLines": [10, 11, 28] }
+      ]
+    },
+    {
+      "path": "review-bot/review-rechecks",
+      "capabilityLine": 20,
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The spec covers history snapshots, identity, classification, planning, freshness, and replay, but mode selection and replay identity leave two proposal outcomes incompletely specified."
+      },
+      "links": [
+        {
+          "id": "rechecks-mode-selection",
+          "specStartLine": 7,
+          "proposalLines": [3, 11, 20],
+          "judgment": {
+            "coverage": "partial",
+            "scope": "in_scope",
+            "minimality": "minimal",
+            "rationale": "The requirement selects recheck after any owned initial review, but does not state how defects introduced by a later head receive a new discovery pass, leaving the proposal's review/fix/re-review loop incomplete."
+          }
+        },
+        { "id": "rechecks-conversation-snapshot", "specStartLine": 26, "proposalLines": [7, 8, 20] },
+        { "id": "rechecks-stable-identities", "specStartLine": 45, "proposalLines": [10, 20] },
+        { "id": "rechecks-legacy-matching", "specStartLine": 60, "proposalLines": [10, 20] },
+        { "id": "rechecks-no-new-defects", "specStartLine": 75, "proposalLines": [11, 20] },
+        { "id": "rechecks-classification", "specStartLine": 90, "proposalLines": [11, 20] },
+        { "id": "rechecks-action-planning", "specStartLine": 113, "proposalLines": [12, 20] },
+        { "id": "rechecks-freshness", "specStartLine": 132, "proposalLines": [13, 20] },
+        {
+          "id": "rechecks-replay-safety",
+          "specStartLine": 151,
+          "proposalLines": [14, 20],
+          "judgment": {
+            "coverage": "partial",
+            "scope": "in_scope",
+            "minimality": "uncertain",
+            "rationale": "The requirement targets replay safety, but deriving identity from generated classification evidence can vary across semantically identical reruns unless a canonical evidence identity is defined."
+          }
+        }
+      ]
+    },
+    {
+      "path": "review-posting",
+      "capabilityLine": 25,
+      "links": [
+        { "id": "posting-one-issue", "specStartLine": 3, "proposalLines": [10, 25] },
+        { "id": "posting-review-event", "specStartLine": 10, "proposalLines": [12, 25, 35] },
+        { "id": "posting-validate-output", "specStartLine": 25, "proposalLines": [12, 13, 25] },
+        { "id": "posting-separate-stages", "specStartLine": 50, "proposalLines": [12, 25] },
+        { "id": "posting-mark-identities", "specStartLine": 65, "proposalLines": [10, 14, 25] },
+        { "id": "posting-preserve-history", "specStartLine": 80, "proposalLines": [12, 14, 25] },
+        { "id": "posting-prevent-duplicates", "specStartLine": 95, "proposalLines": [14, 25] }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "new-head-discovery-gap",
+      "type": "missing_coverage",
+      "message": "Mode selection does not specify how a later pull-request head receives defect discovery after an owned initial review, so a passing zero-target review can prevent new defects from being reviewed.",
+      "proposalLines": [3],
+      "capability": "review-bot/review-rechecks",
+      "specStartLine": 7,
+      "source": "https://github.com/sachinkundu/deos-review-agent/pull/22#discussion_r3820009494"
+    },
+    {
+      "id": "inline-comment-readback-gap",
+      "type": "missing_coverage",
+      "message": "Created-object read-back does not explicitly enumerate and verify inline comments created as children of an initial review, despite the proposal requiring every created provider object to be read back.",
+      "proposalLines": [14],
+      "capability": "github-integration",
+      "specStartLine": 102,
+      "source": "https://github.com/sachinkundu/deos-review-agent/pull/22#discussion_r3820009501"
+    },
+    {
+      "id": "generated-evidence-idempotency-gap",
+      "type": "ambiguous",
+      "message": "The replay key includes normalized generated evidence but does not define a provider-independent canonical evidence identity, so semantically identical reruns may produce different action identities.",
+      "proposalLines": [14],
+      "capability": "review-bot/review-rechecks",
+      "specStartLine": 151,
+      "source": "https://github.com/sachinkundu/deos-review-agent/pull/22#discussion_r3820009507"
+    }
+  ]
+}

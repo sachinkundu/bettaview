@@ -1,0 +1,172 @@
+{
+  "version": 2,
+  "change": "add-batch-calculator-cli",
+  "review": {
+    "kind": "semantic-spec-review",
+    "reviewer": {
+      "type": "llm",
+      "name": "codex",
+      "version": "gpt-5"
+    },
+    "promptVersion": "openspec-semantic-traceability-v1",
+    "reviewedAt": "2026-08-19T14:14:28+03:00",
+    "overall": "pass",
+    "documents": [
+      {
+        "file": "proposal.md",
+        "sha256": "d508e9e661c0c01c91a0a96e1175fe5ff259544b614e5226a3eb392b17fd0338"
+      },
+      {
+        "file": "specs/batch-calculator-cli/spec.md",
+        "sha256": "8cde12a2845b7bc2ada5da694f4585eb6b7d2b15f734e91d07df792eadd7aa27"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "path": "batch-calculator-cli",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 16,
+        "endLine": 16,
+        "quote": "- `batch-calculator-cli`: Expression grammar, evaluation semantics, batch processing, output formats, and error/exit behavior for the calculator command."
+      },
+      "specFile": "specs/batch-calculator-cli/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The five requirements cover every behavior named by the capability and the proposal's four change statements without introducing a separate capability."
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "input-modes",
+      "capability": "batch-calculator-cli",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Add a `calc` command that evaluates one expression supplied as an argument or reads newline-delimited expressions from standard input."
+        }
+      ],
+      "spec": {
+        "file": "specs/batch-calculator-cli/spec.md",
+        "startLine": 7,
+        "endLine": 16
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement specifies the proposal's two input modes and only adds the boundary behavior needed to make their interaction and batch line handling testable."
+      }
+    },
+    {
+      "id": "arithmetic-semantics",
+      "capability": "batch-calculator-cli",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Support decimal numbers, parentheses, unary signs, the `+`, `-`, `*`, `/`, and `^` operators, and conventional precedence and associativity."
+        }
+      ],
+      "spec": {
+        "file": "specs/batch-calculator-cli/spec.md",
+        "startLine": 18,
+        "endLine": 27
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement covers exactly the proposed grammar and makes the otherwise ambiguous associativity and unary-precedence behavior observable with two examples."
+      }
+    },
+    {
+      "id": "batch-control",
+      "capability": "batch-calculator-cli",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Add `--format text|json` output and `--fail-fast` batch behavior; the default batch mode reports an error for each invalid line and continues with later lines."
+        }
+      ],
+      "spec": {
+        "file": "specs/batch-calculator-cli/spec.md",
+        "startLine": 29,
+        "endLine": 38
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The default continuation and fail-fast scenarios directly specify both batch behaviors requested by the proposal."
+      }
+    },
+    {
+      "id": "output-formats",
+      "capability": "batch-calculator-cli",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Add `--format text|json` output and `--fail-fast` batch behavior; the default batch mode reports an error for each invalid line and continues with later lines."
+        }
+      ],
+      "spec": {
+        "file": "specs/batch-calculator-cli/spec.md",
+        "startLine": 40,
+        "endLine": 45
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement defines the two requested output formats with the minimum record fields needed to preserve ordered batch results and errors."
+      }
+    },
+    {
+      "id": "failure-contract",
+      "capability": "batch-calculator-cli",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Reject division by zero, malformed expressions, unsupported tokens, and non-finite results with stable error codes and non-zero exit behavior."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 16,
+          "endLine": 16,
+          "quote": "- `batch-calculator-cli`: Expression grammar, evaluation semantics, batch processing, output formats, and error/exit behavior for the calculator command."
+        }
+      ],
+      "spec": {
+        "file": "specs/batch-calculator-cli/spec.md",
+        "startLine": 47,
+        "endLine": 56
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement assigns stable codes and non-zero statuses to every proposed failure class; the capability's explicit error/exit scope also supports the distinct usage-error status."
+      }
+    }
+  ],
+  "findings": []
+}

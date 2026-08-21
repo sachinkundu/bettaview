@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenSpec Traceability Review"
+  short_description: "Generate evidence-backed OpenSpec traceability"
+  default_prompt: "Use $review-openspec-traceability to review this OpenSpec change and generate its validated traceability sidecar."

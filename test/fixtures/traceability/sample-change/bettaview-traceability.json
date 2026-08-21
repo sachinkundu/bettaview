@@ -1,0 +1,86 @@
+{
+  "version": 3,
+  "change": "sample-change",
+  "review": {
+    "kind": "semantic-spec-review",
+    "reviewer": {
+      "type": "llm",
+      "name": "fixture-judge",
+      "version": "1"
+    },
+    "promptVersion": "openspec-semantic-traceability-bidirectional-v2",
+    "reviewedAt": "2026-08-19T14:14:28+03:00",
+    "overall": "pass",
+    "documents": [
+      {
+        "file": "proposal.md",
+        "sha256": "6159a0a469e3c2cc598241f0de8d35f8764ac0ad5cc5398df37f91ea10816709"
+      },
+      {
+        "file": "specs/job-resume/spec.md",
+        "sha256": "80d6769172a1ea5bc22576aa29e6f3b9b0ab055babec3e55e07232333d20bf5b"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "path": "job-resume",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 13,
+        "endLine": 13,
+        "quote": "- `job-resume`: Resume behavior for paused jobs with saved checkpoints."
+      },
+      "specFile": "specs/job-resume/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The spec covers the declared resume behavior without unrelated requirements."
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "resume-job",
+      "capability": "job-resume",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Resume a paused job from its saved checkpoint."
+        }
+      ],
+      "spec": {
+        "file": "specs/job-resume/spec.md",
+        "startLine": 3,
+        "endLine": 8
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement directly specifies the proposal's resume behavior."
+      }
+    }
+  ],
+  "proposalStatements": [
+    {
+      "id": "proposal-statement-7",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 7,
+        "endLine": 7,
+        "quote": "- Resume a paused job from its saved checkpoint."
+      },
+      "requirementLinks": [
+        "resume-job"
+      ],
+      "coverage": "sufficient",
+      "rationale": "The resume requirement implements the complete proposal change statement."
+    }
+  ],
+  "findings": []
+}

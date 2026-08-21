@@ -1,0 +1,1533 @@
+{
+  "version": 2,
+  "change": "review-history-aware-rechecks",
+  "review": {
+    "kind": "semantic-spec-review",
+    "reviewer": {
+      "type": "llm",
+      "name": "codex-cli",
+      "version": "session-model"
+    },
+    "promptVersion": "openspec-semantic-traceability-line-ids-v1",
+    "reviewedAt": "2026-08-20T14:34:48+03:00",
+    "overall": "findings",
+    "documents": [
+      {
+        "file": "proposal.md",
+        "sha256": "8236a97d8aaf8369f8b7e322398d661e06e8884abde2a60092d8321e12a6edb1"
+      },
+      {
+        "file": "specs/agent-pipeline/spec.md",
+        "sha256": "cf3cf92e9284d51d33a494262a0add2553b0976508b2084f32222a96562f8742"
+      },
+      {
+        "file": "specs/github-integration/spec.md",
+        "sha256": "071ddcd80bbdd0308695b7d6540c983528b61d3e24f4d2f436dc8bc74d2a3bb8"
+      },
+      {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "sha256": "ee8fb4070039a1f16a2daa93e520b6274d0e6480aea49215c346cc922275fa8b"
+      },
+      {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "sha256": "a0673c8ccb8d72b958c422020d35f678ed67585f08c3b6d986864e038e02c3c7"
+      },
+      {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "sha256": "5db98729d3c548777fa0fc8a5cdb077e37ba6878fc944ba09495c80f37f3e3f9"
+      },
+      {
+        "file": "specs/review-posting/spec.md",
+        "sha256": "f5d99950f28fcdd3ef158e61f1b7db4f1c40b5d521baa3ba4071b40f3fc8bd74"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "path": "agent-pipeline",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 26,
+        "endLine": 26,
+        "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+      },
+      "specFile": "specs/agent-pipeline/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "path": "github-integration",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 24,
+        "endLine": 24,
+        "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+      },
+      "specFile": "specs/github-integration/spec.md",
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirements stay within provider integration, but the created-object read-back requirement does not clearly enumerate inline comments created as children of an initial review."
+      }
+    },
+    {
+      "path": "review-bot/agent-skill-registry",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 27,
+        "endLine": 27,
+        "quote": "- `review-bot/agent-skill-registry`: Add host-owned symbolic review-history resources and prevent pull request content from shadowing or expanding them."
+      },
+      "specFile": "specs/review-bot/agent-skill-registry/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "path": "review-bot/diff-filtering",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 28,
+        "endLine": 28,
+        "quote": "- `review-bot/diff-filtering`: Apply existing path exclusions to file-scoped history views without removing excluded conversations from the complete audit snapshot or final safety checks."
+      },
+      "specFile": "specs/review-bot/diff-filtering/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "path": "review-bot/review-rechecks",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 20,
+        "endLine": 20,
+        "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+      },
+      "specFile": "specs/review-bot/review-rechecks/spec.md",
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The spec covers history snapshots, identity, classification, planning, freshness, and replay, but mode selection and replay identity leave two proposal outcomes incompletely specified."
+      }
+    },
+    {
+      "path": "review-posting",
+      "proposal": {
+        "file": "proposal.md",
+        "startLine": 25,
+        "endLine": 25,
+        "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+      },
+      "specFile": "specs/review-posting/spec.md",
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "agent-pipeline-run-review-agents",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 3,
+        "endLine": 32
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-feed-coordinator",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 34,
+        "endLine": 67
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-deduplicate",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 69,
+        "endLine": 78
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-verdict",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 35,
+          "endLine": 35,
+          "quote": "- Preserves fresh installation tokens, exact-head right-side diff validation, bot-authored PR skipping, current risk-tier behavior, and fail-closed trusted agent validation."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 80,
+        "endLine": 93
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-validate-output",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 95,
+        "endLine": 108
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-bounded-history",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 112,
+        "endLine": 125
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-untrusted-evidence",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 127,
+        "endLine": 136
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "agent-pipeline-mode-coverage",
+      "capability": "agent-pipeline",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 26,
+          "endLine": 26,
+          "quote": "- `agent-pipeline`: Supply bounded history views to reviewers and complete history plus classification rules to the coordinator while preserving attributed, schema-validated results."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 35,
+          "endLine": 35,
+          "quote": "- Preserves fresh installation tokens, exact-head right-side diff validation, bot-authored PR skipping, current risk-tier behavior, and fail-closed trusted agent validation."
+        }
+      ],
+      "spec": {
+        "file": "specs/agent-pipeline/spec.md",
+        "startLine": 138,
+        "endLine": 147
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-mint-token",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 35,
+          "endLine": 35,
+          "quote": "- Preserves fresh installation tokens, exact-head right-side diff validation, bot-authored PR skipping, current risk-tier behavior, and fail-closed trusted agent validation."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 3,
+        "endLine": 16
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-post-review",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 13,
+          "endLine": 13,
+          "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 35,
+          "endLine": 35,
+          "quote": "- Preserves fresh installation tokens, exact-head right-side diff validation, bot-authored PR skipping, current risk-tier behavior, and fail-closed trusted agent validation."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 18,
+        "endLine": 31
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-provider-identity",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 35,
+        "endLine": 44
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-rest-history",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Fetch the complete, fully paginated pull request review history, including reviews, inline comments and replies, general comments, and review-thread resolution state when GitHub exposes it to the App."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 46,
+        "endLine": 59
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-graphql-history",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Fetch the complete, fully paginated pull request review history, including reviews, inline comments and replies, general comments, and review-thread resolution state when GitHub exposes it to the App."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 61,
+        "endLine": 74
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-thread-replies",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 76,
+        "endLine": 89
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-status-comments",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 91,
+        "endLine": 100
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "github-provider-readback",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 102,
+        "endLine": 111
+      },
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The proposal requires every created provider object to be read back, but the requirement does not explicitly require enumeration and verification of inline comments created with an initial review."
+      }
+    },
+    {
+      "id": "github-sanitized-failures",
+      "capability": "github-integration",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 24,
+          "endLine": 24,
+          "quote": "- `github-integration`: Add paginated review, review-comment, issue-comment, and GraphQL review-thread reads; verified bot identity; top-level review-thread replies; and provider read-back."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 33,
+          "endLine": 33,
+          "quote": "- Requires real GitHub App contract inspection before specs and design are finalized, including REST pagination, reply targeting, GraphQL thread resolution, App identity, permissions, nullable fields, and provider error shapes."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 113,
+        "endLine": 122
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "registry-isolate-resources",
+      "capability": "review-bot/agent-skill-registry",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 27,
+          "endLine": 27,
+          "quote": "- `review-bot/agent-skill-registry`: Add host-owned symbolic review-history resources and prevent pull request content from shadowing or expanding them."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "startLine": 3,
+        "endLine": 20
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "registry-recheck-resources",
+      "capability": "review-bot/agent-skill-registry",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 27,
+          "endLine": 27,
+          "quote": "- `review-bot/agent-skill-registry`: Add host-owned symbolic review-history resources and prevent pull request content from shadowing or expanding them."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "startLine": 24,
+        "endLine": 37
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "registry-run-manifest",
+      "capability": "review-bot/agent-skill-registry",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 27,
+          "endLine": 27,
+          "quote": "- `review-bot/agent-skill-registry`: Add host-owned symbolic review-history resources and prevent pull request content from shadowing or expanding them."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "startLine": 39,
+        "endLine": 48
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "registry-resource-bounds",
+      "capability": "review-bot/agent-skill-registry",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 27,
+          "endLine": 27,
+          "quote": "- `review-bot/agent-skill-registry`: Add host-owned symbolic review-history resources and prevent pull request content from shadowing or expanding them."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 34,
+          "endLine": 34,
+          "quote": "- Adds deterministic provider, normalization, filtering, matching, concurrency, idempotency, and no-secret-leakage tests plus a local real-PR dry run and disposable provider-posting proof."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/agent-skill-registry/spec.md",
+        "startLine": 50,
+        "endLine": 63
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "filtering-path-exclusions",
+      "capability": "review-bot/diff-filtering",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 28,
+          "endLine": 28,
+          "quote": "- `review-bot/diff-filtering`: Apply existing path exclusions to file-scoped history views without removing excluded conversations from the complete audit snapshot or final safety checks."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "startLine": 3,
+        "endLine": 16
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "filtering-complete-conversation",
+      "capability": "review-bot/diff-filtering",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 28,
+          "endLine": 28,
+          "quote": "- `review-bot/diff-filtering`: Apply existing path exclusions to file-scoped history views without removing excluded conversations from the complete audit snapshot or final safety checks."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "startLine": 18,
+        "endLine": 31
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "filtering-exclusion-manifest",
+      "capability": "review-bot/diff-filtering",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 9,
+          "endLine": 9,
+          "quote": "- Give each file-scoped reviewer a deterministic filtered history view and give the coordinator the complete history, while treating every provider-authored text field as untrusted task data."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 28,
+          "endLine": 28,
+          "quote": "- `review-bot/diff-filtering`: Apply existing path exclusions to file-scoped history views without removing excluded conversations from the complete audit snapshot or final safety checks."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "startLine": 33,
+        "endLine": 46
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "filtering-no-new-targets",
+      "capability": "review-bot/diff-filtering",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 28,
+          "endLine": 28,
+          "quote": "- `review-bot/diff-filtering`: Apply existing path exclusions to file-scoped history views without removing excluded conversations from the complete audit snapshot or final safety checks."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/diff-filtering/spec.md",
+        "startLine": 48,
+        "endLine": 57
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-mode-selection",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 3,
+          "endLine": 3,
+          "quote": "Each review run currently treats the latest pull request diff as a fresh event, so repeated runs can duplicate findings and cannot explain whether an earlier finding is fixed, still present, obsolete, or ambiguous. The bot needs an auditable view of the real GitHub conversation before it can support the intended review, fix, and re-review loop safely."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 7,
+        "endLine": 24
+      },
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The requirement selects recheck after any owned initial review, but does not state how defects introduced by a later head receive a new discovery pass, leaving the proposal's review/fix/re-review loop incomplete."
+      }
+    },
+    {
+      "id": "rechecks-conversation-snapshot",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 7,
+          "endLine": 7,
+          "quote": "- Fetch the complete, fully paginated pull request review history, including reviews, inline comments and replies, general comments, and review-thread resolution state when GitHub exposes it to the App."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 8,
+          "endLine": 8,
+          "quote": "- Normalize and retain the provider conversation as a versioned snapshot with stable provider identities, deterministic ordering, and a canonical digest; record thread resolution as `unknown` instead of inferring it when GraphQL is unavailable."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 26,
+        "endLine": 43
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-stable-identities",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 45,
+        "endLine": 58
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-legacy-matching",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 60,
+        "endLine": 73
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-no-new-defects",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 75,
+        "endLine": 88
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-classification",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 11,
+          "endLine": 11,
+          "quote": "- Classify prior and current findings as fixed, unfixed, obsolete, new, or ambiguous, with evidence and strictly validated reply or new-comment actions."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 90,
+        "endLine": 111
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-action-planning",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 113,
+        "endLine": 130
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-freshness",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 13,
+          "endLine": 13,
+          "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 132,
+        "endLine": 149
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "rechecks-replay-safety",
+      "capability": "review-bot/review-rechecks",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 20,
+          "endLine": 20,
+          "quote": "- `review-bot/review-rechecks`: Complete review-history snapshots, stable finding identity, conservative prior/current matching, five-state classification, and deterministic recheck planning."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 151,
+        "endLine": 164
+      },
+      "judgment": {
+        "coverage": "partial",
+        "scope": "in_scope",
+        "minimality": "uncertain",
+        "rationale": "The requirement targets replay safety, but deriving identity from generated classification evidence can vary across semantically identical reruns unless a canonical evidence identity is defined."
+      }
+    },
+    {
+      "id": "posting-one-issue",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 3,
+        "endLine": 8
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "posting-review-event",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 35,
+          "endLine": 35,
+          "quote": "- Preserves fresh installation tokens, exact-head right-side diff validation, bot-authored PR skipping, current risk-tier behavior, and fail-closed trusted agent validation."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 10,
+        "endLine": 23
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "posting-validate-output",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 13,
+          "endLine": 13,
+          "quote": "- Re-fetch both the exact head and complete conversation immediately before posting; if either the head SHA or history digest changed, retain a stale result and post nothing."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 25,
+        "endLine": 46
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "posting-separate-stages",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 50,
+        "endLine": 63
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "posting-mark-identities",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 10,
+          "endLine": 10,
+          "quote": "- Add stable identities for new bot findings and conservative matching for unmarked legacy findings."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 65,
+        "endLine": 78
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "posting-preserve-history",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 12,
+          "endLine": 12,
+          "quote": "- Plan GitHub mutations separately from classification: new findings create comments, owned fixed/unfixed/obsolete findings reply to their existing top-level threads, and ambiguous findings do not mutate GitHub."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 80,
+        "endLine": 93
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    },
+    {
+      "id": "posting-prevent-duplicates",
+      "capability": "review-posting",
+      "relationship": "supports",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        },
+        {
+          "file": "proposal.md",
+          "startLine": 25,
+          "endLine": 25,
+          "quote": "- `review-posting`: Separate proposed writes from mutation, add stable finding markers and reply actions, guard both head and conversation freshness, and make identical reruns idempotent without resolving threads."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-posting/spec.md",
+        "startLine": 95,
+        "endLine": 108
+      },
+      "judgment": {
+        "coverage": "sufficient",
+        "scope": "in_scope",
+        "minimality": "minimal",
+        "rationale": "The complete requirement block is supported by the cited proposal behavior and capability declaration, stays within that capability, and adds only observable detail needed to make the behavior testable."
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "new-head-discovery-gap",
+      "type": "missing_coverage",
+      "message": "Mode selection does not specify how a later pull-request head receives defect discovery after an owned initial review, so a passing zero-target review can prevent new defects from being reviewed.",
+      "capability": "review-bot/review-rechecks",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 3,
+          "endLine": 3,
+          "quote": "Each review run currently treats the latest pull request diff as a fresh event, so repeated runs can duplicate findings and cannot explain whether an earlier finding is fixed, still present, obsolete, or ambiguous. The bot needs an auditable view of the real GitHub conversation before it can support the intended review, fix, and re-review loop safely."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 7,
+        "endLine": 24
+      },
+      "source": "https://github.com/sachinkundu/deos-review-agent/pull/22#discussion_r3820009494"
+    },
+    {
+      "id": "inline-comment-readback-gap",
+      "type": "missing_coverage",
+      "message": "Created-object read-back does not explicitly enumerate and verify inline comments created as children of an initial review, despite the proposal requiring every created provider object to be read back.",
+      "capability": "github-integration",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/github-integration/spec.md",
+        "startLine": 102,
+        "endLine": 111
+      },
+      "source": "https://github.com/sachinkundu/deos-review-agent/pull/22#discussion_r3820009501"
+    },
+    {
+      "id": "generated-evidence-idempotency-gap",
+      "type": "ambiguous",
+      "message": "The replay key includes normalized generated evidence but does not define a provider-independent canonical evidence identity, so semantically identical reruns may produce different action identities.",
+      "capability": "review-bot/review-rechecks",
+      "proposalEvidence": [
+        {
+          "file": "proposal.md",
+          "startLine": 14,
+          "endLine": 14,
+          "quote": "- Read every created provider object back, retain its ID and URL, prevent duplicate comments or replies on identical reruns, and never resolve a review thread automatically."
+        }
+      ],
+      "spec": {
+        "file": "specs/review-bot/review-rechecks/spec.md",
+        "startLine": 151,
+        "endLine": 164
+      },
+      "source": "https://github.com/sachinkundu/deos-review-agent/pull/22#discussion_r3820009507"
+    }
+  ]
+}

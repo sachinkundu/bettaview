@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "change": "add-batch-calculator-cli",
+  "links": [
+    {
+      "id": "input-modes",
+      "proposal": { "file": "proposal.md", "startLine": 7, "endLine": 7 },
+      "spec": { "file": "specs/batch-calculator-cli/spec.md", "startLine": 7, "endLine": 16 }
+    },
+    {
+      "id": "arithmetic-semantics",
+      "proposal": { "file": "proposal.md", "startLine": 8, "endLine": 8 },
+      "spec": { "file": "specs/batch-calculator-cli/spec.md", "startLine": 18, "endLine": 27 }
+    },
+    {
+      "id": "batch-control",
+      "proposal": { "file": "proposal.md", "startLine": 9, "endLine": 9 },
+      "spec": { "file": "specs/batch-calculator-cli/spec.md", "startLine": 29, "endLine": 38 }
+    },
+    {
+      "id": "output-formats",
+      "proposal": { "file": "proposal.md", "startLine": 9, "endLine": 9 },
+      "spec": { "file": "specs/batch-calculator-cli/spec.md", "startLine": 40, "endLine": 45 }
+    },
+    {
+      "id": "failure-contract",
+      "proposal": { "file": "proposal.md", "startLine": 10, "endLine": 10 },
+      "spec": { "file": "specs/batch-calculator-cli/spec.md", "startLine": 47, "endLine": 56 }
+    }
+  ]
+}
