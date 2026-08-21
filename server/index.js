@@ -12,6 +12,7 @@ import {
   locateSelectedText,
   marker,
   parsePullRequestUrl,
+  pullRequestState,
   readMarker,
 } from "./github.js";
 
@@ -202,7 +203,7 @@ app.get("/api/pr", async (request, response, next) => {
       url: context.pr.html_url,
       headSha: context.pr.head.sha,
       baseSha: context.pr.base.sha,
-      state: context.pr.state,
+      state: pullRequestState(context.pr),
       draft: context.pr.draft,
       authorLogin: context.pr.user.login,
       viewerLogin: viewer.login,

@@ -10,6 +10,7 @@ import {
   locateSelectedText,
   marker,
   parsePullRequestUrl,
+  pullRequestState,
   readMarker,
 } from "../server/github.js";
 
@@ -25,6 +26,12 @@ test("parses a GitHub pull request URL", () => {
   assert.deepEqual(parsePullRequestUrl("https://github.com/acme/docs/pull/42/files"), {
     owner: "acme", repo: "docs", number: 42,
   });
+});
+
+test("distinguishes merged pull requests from other closed pull requests", () => {
+  assert.equal(pullRequestState({ state: "open", merged_at: null }), "open");
+  assert.equal(pullRequestState({ state: "closed", merged_at: null }), "closed");
+  assert.equal(pullRequestState({ state: "closed", merged_at: "2026-08-18T09:06:10Z" }), "merged");
 });
 
 test("renders Markdown files available at the pull request head", () => {

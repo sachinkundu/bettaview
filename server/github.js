@@ -52,6 +52,11 @@ export function approvalRestriction(viewerLogin, authorLogin) {
   return "Pull request authors cannot approve their own pull requests.";
 }
 
+export function pullRequestState(pullRequest) {
+  if (pullRequest?.merged_at) return "merged";
+  return pullRequest?.state === "closed" ? "closed" : "open";
+}
+
 export function isRenderableMarkdownFile(file) {
   return file?.status !== "removed" && /\.(?:md|markdown)$/i.test(file?.filename || "");
 }

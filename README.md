@@ -6,6 +6,18 @@ rendered form while keeping comments and review state native to GitHub.
 The experiment plan is in [`implementation-plan.md`](implementation-plan.md).
 Phase 2 OpenSpec traceability is deliberately separate and has not started.
 
+## See BettaView
+
+Review rendered Markdown beside its GitHub threads and move between changed
+documents from the file tree.
+
+![BettaView review workspace showing rendered Markdown, changed documents, and GitHub review threads](docs/images/bettaview-review-workspace.png)
+
+Select text in the rendered document and add a comment without leaving the
+page.
+
+![BettaView comment composer beside selected rendered text](docs/images/bettaview-comment-composer.png)
+
 ## Run the experiment portal
 
 Prerequisites: Node.js 22 or newer and an authenticated GitHub CLI session with
@@ -17,9 +29,9 @@ npm run build
 npm start
 ```
 
-Open <http://127.0.0.1:4174>. The portal remembers the most recently opened
-pull request and restores it while it remains open on GitHub. Otherwise, it
-starts with a centered field for an open GitHub pull request URL.
+Open <http://127.0.0.1:4174>. The portal remembers the most recently viewed
+pull request and restores it while it remains available on GitHub. Open,
+merged, and closed pull requests can all be viewed.
 
 - Select unique text in rendered Markdown to open a comment box beside the
   selection.

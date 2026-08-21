@@ -4,7 +4,8 @@ import { request } from "./api.js";
 import { annotationSvgAttributes, circleSvgGeometry, startDrawing } from "./annotation-geometry.js";
 import { DEFAULT_FILE_RAIL_WIDTH, MIN_FILE_RAIL_WIDTH, clampFileRailWidth, maxFileRailWidth } from "./file-rail.js";
 import { highlightCodeBlocks } from "./syntax-highlighting.js";
-import { clearRecentPullRequest, getRecentPullRequest, saveRecentPullRequest } from "./recent-pull-request.js";
+import { getRecentPullRequest, saveRecentPullRequest } from "./recent-pull-request.js";
+import { buildReviewFileTree, commentCloseNeedsConfirmation, decorateScenarioKeywords } from "./review-ui.js";
 import { applyTheme, getInitialTheme, nextTheme } from "./theme.js";
 import { activeThreadReferences, draftReferenceKey, threadReferenceKey } from "./thread-links.js";
 import "./styles.css";
@@ -54,7 +55,7 @@ function shell() {
     <header class="topbar">
       <a class="brand" href="#" aria-label="BettaView home">
         <span class="brand-mark">β</span>
-        <span><strong>BettaView</strong><small>Rendered review experiment</small></span>
+        <span><strong>BettaView</strong><small>Rendered Markdown PR reviews</small></span>
       </a>
       <form id="pr-form" class="pr-form" hidden>
         <label for="header-pr-url">Pull request</label>
@@ -68,7 +69,7 @@ function shell() {
     </header>
     <div id="notice" class="notice" hidden></div>
     <main id="workspace" class="empty-state"></main>
-    <aside id="selection-composer" class="selection-composer" hidden>
+    <aside id="selection-composer" class="selection-composer" role="dialog" aria-label="Add review comment" hidden>
       <button class="composer-close" aria-label="Close">×</button>
       <span class="eyebrow">Selected rendered text</span>
       <blockquote id="selection-preview"></blockquote>
@@ -81,7 +82,13 @@ function shell() {
     </div>
   `;
   document.querySelector("#pr-form").addEventListener("submit", openPullRequest);
-  document.querySelector(".composer-close").addEventListener("click", closeSelectionComposer);
+  const composer = document.querySelector("#selection-composer");
+  document.querySelector(".composer-close").addEventListener("click", requestCloseSelectionComposer);
+  composer.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    requestCloseSelectionComposer();
+  });
   document.querySelector("#submit-selection").addEventListener("click", stageSelectionComment);
   document.querySelector("#publish-review").addEventListener("click", publishReview);
   document.querySelector("#theme-toggle").addEventListener("click", () => {
@@ -121,7 +128,7 @@ function renderOpenPrompt(message = "") {
     <section class="open-pr-card">
       <span class="eyebrow">Open pull request</span>
       <h1>Review rendered Markdown</h1>
-      <p>${escapeHtml(message || "Paste the URL of an open GitHub pull request to begin.")}</p>
+      <p>${escapeHtml(message || "Paste the URL of a GitHub pull request to begin.")}</p>
       <form id="empty-pr-form" class="empty-pr-form">
         <label class="sr-only" for="empty-pr-url">GitHub pull request URL</label>
         <input id="empty-pr-url" name="url" type="url" value="${escapeHtml(state.prUrl)}" placeholder="https://github.com/owner/repository/pull/123" autocomplete="url" autofocus required />
@@ -151,20 +158,12 @@ function confirmDraftDiscard(action) {
   return true;
 }
 
-async function loadPullRequest({ preservePath = true, restoring = false } = {}) {
+async function loadPullRequest({ preservePath = true } = {}) {
   const workspace = document.querySelector("#workspace");
   workspace.className = "empty-state";
   workspace.innerHTML = `<div class="loader"></div><p>Loading rendered Markdown and native threads from GitHub…</p>`;
   try {
     const data = await request(`/api/pr?url=${encodeURIComponent(state.prUrl)}`);
-    if (data.state !== "open") {
-      if (restoring) {
-        clearRecentPullRequest();
-        state.prUrl = "";
-      }
-      renderOpenPrompt("That pull request is no longer open. Enter another pull request URL.");
-      return;
-    }
     state.data = data;
     state.prUrl = data.url;
     saveRecentPullRequest(state.prUrl);
@@ -191,10 +190,10 @@ function renderWorkspace() {
       <div class="pr-summary">
         <span class="eyebrow">${escapeHtml(data.repository)} · PR #${data.number}</span>
         <a href="${escapeHtml(data.url)}" target="_blank" rel="noreferrer"><h1>${escapeHtml(data.title)}</h1></a>
-        <div class="commit-chip"><span></span>Exact head <code>${shortSha(data.headSha)}</code></div>
+        <div class="pr-state-row"><span class="pr-state pr-state-${escapeHtml(data.state)}">${escapeHtml(data.state)}</span><div class="commit-chip"><span></span>Exact head <code>${shortSha(data.headSha)}</code></div></div>
       </div>
       <nav class="file-list" aria-label="Changed Markdown files">
-        ${data.files.map((item) => `<button class="file-link ${item.path === state.activePath ? "active" : ""}" data-path="${escapeHtml(item.path)}" title="${escapeHtml(item.path)}"><span>${escapeHtml(item.path)}</span><small>+${item.additions} −${item.deletions}</small></button>`).join("") || `<p class="muted">No changed Markdown files.</p>`}
+        <div class="file-tree" role="tree">${renderFileTree(buildReviewFileTree(data.files)) || `<p class="muted">No changed Markdown files.</p>`}</div>
       </nav>
       <div class="review-actions">
         <span class="eyebrow">Submit review state</span>
@@ -236,9 +235,23 @@ function renderWorkspace() {
   bindThreadActions();
   updateDraftBar();
   if (file) {
+    decorateScenarioKeywords(document.querySelector("#rendered-document"));
     highlightCodeBlocks(document.querySelector("#rendered-document"));
     renderMermaidDiagrams(file);
   }
+}
+
+function renderFileTree(nodes, depth = 0) {
+  return nodes.map((node) => {
+    if (node.kind === "branch") {
+      return `<div class="file-tree-node" role="treeitem" aria-expanded="true">
+        <div class="file-tree-folder" style="--tree-depth: ${depth}"><span class="file-tree-chevron" aria-hidden="true">⌄</span><span>${escapeHtml(node.label)}</span></div>
+        <div role="group">${renderFileTree(node.children, depth + 1)}</div>
+      </div>`;
+    }
+    const item = node.file;
+    return `<button class="file-link ${item.path === state.activePath ? "active" : ""}" role="treeitem" ${item.path === state.activePath ? 'aria-current="page"' : ""} style="--tree-depth: ${depth}" data-path="${escapeHtml(item.path)}" title="${escapeHtml(item.path)}"><span class="file-tree-document" aria-hidden="true"></span><span>${escapeHtml(node.label)}</span><small>+${item.additions} −${item.deletions}</small></button>`;
+  }).join("");
 }
 
 function setFileRailWidth(width) {
@@ -426,6 +439,16 @@ function closeSelectionComposer() {
   state.selectedText = "";
   state.selectionRange = null;
   window.getSelection()?.removeAllRanges();
+}
+
+function requestCloseSelectionComposer() {
+  const textarea = document.querySelector("#selection-comment");
+  if (commentCloseNeedsConfirmation(textarea.value) && !window.confirm("Discard this unfinished comment and close?")) {
+    textarea.focus();
+    return false;
+  }
+  closeSelectionComposer();
+  return true;
 }
 
 function stageSelectionComment() {
@@ -877,7 +900,7 @@ function goToLine(path, line) {
 
 shell();
 if (state.prUrl) {
-  loadPullRequest({ preservePath: false, restoring: true });
+  loadPullRequest({ preservePath: false });
 } else {
   renderOpenPrompt();
 }
